@@ -54,6 +54,7 @@ class _ChatAppState extends State<ChatApp> {
   fireStoreSerive fireStoreservice = fireStoreSerive();
 
   TextEditingController _controller = TextEditingController();
+  TextEditingController _editingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +110,10 @@ class _ChatAppState extends State<ChatApp> {
 
                       return ListTile(
                         title: Text(noteText),
+                        trailing: editWidgets(
+                            editingController: _editingController,
+                            fireStoreservice: fireStoreservice,
+                            docID: docID),
                       );
                     },
                   );
@@ -120,6 +125,67 @@ class _ChatAppState extends State<ChatApp> {
           )
         ],
       ),
+    );
+  }
+}
+
+class editWidgets extends StatelessWidget {
+  const editWidgets({
+    super.key,
+    required TextEditingController editingController,
+    required this.fireStoreservice,
+    required this.docID,
+  }) : _editingController = editingController;
+
+  final TextEditingController _editingController;
+  final fireStoreSerive fireStoreservice;
+  final String docID;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: TextField(
+              controller: _editingController,
+            ),
+            content: Row(
+              children: [
+                MaterialButton(
+                  onPressed: () {
+                    fireStoreservice.updateNotes(
+                        docID, _editingController.text);
+
+                    _editingController.clear();
+
+                    Navigator.pop(context);
+                  },
+                  child: Text("Add"),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    fireStoreservice.deleteNote(docID);
+
+                    _editingController.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Delete"),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    _editingController.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel"),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+      icon: Icon(Icons.edit),
     );
   }
 }

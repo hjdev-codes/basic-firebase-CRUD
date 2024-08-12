@@ -22,5 +22,15 @@ class fireStoreSerive {
   }
 //UPDATE: update notes given a doc id
 
+  Future<void> updateNotes(String docID, String newNote) {
+    return notes.doc(docID).update({
+      'note': newNote,
+    });
+  }
+
 //DELETE:Delete notes given a doc
+
+  Future<void> deleteNote(String docID) {
+    return notes.doc(docID).delete();
+  }
 }
